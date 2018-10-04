@@ -6,12 +6,15 @@ using System.Web.Mvc;
 using ConneixTask.Models;
 using System.Data;
 using System.Data.Entity;
+using ConneixTask.IRepository;
+using ConneixTask.Repository;
 
 namespace ConneixTask.Controllers
 {
     public class HometController : Controller
     {
-        public taskempEntities db = new taskempEntities();
+        //public taskempEntities db = new taskempEntities();
+        public IReposite IRepObj = new Reposite();
         // GET: Homet
         public ActionResult Index()
         {
@@ -40,18 +43,16 @@ namespace ConneixTask.Controllers
                 //for insert recored..  
                 if (emp.Emp_Id == 0)
                 {
-                    db.Employees.Add(emp);
-                    result.Message = "your product has been saved success..";
+                    IRepObj.AddEmployee(emp);
+                    result.Message = "your employee has been saved success..";
                     result.Status = true;
                 }
                 else  //for update recored..  
                 {
-                    db.Entry(emp).State = EntityState.Modified;
-                    result.Message = "your product has been updated successfully..";
+                    IRepObj.UpdateEmployee(emp);
+                    result.Message = "your employee has been updated successfully..";
                     result.Status = true;
-                }
-                db.SaveChanges();
-
+                }               
 
             }
             catch (Exception ex)
@@ -69,7 +70,7 @@ namespace ConneixTask.Controllers
 
             try
             {
-                _list = db.Employees.ToList();
+                _list = IRepObj.GetAllEmployees();
                 var result = from c in _list
                              select new[]
                              {
@@ -107,11 +108,10 @@ namespace ConneixTask.Controllers
             {
 
                 var emp = new Employee { Emp_Id = id };
-                db.Entry(emp).State = EntityState.Deleted;
-                db.SaveChanges();
+                IRepObj.DeleteEmployee(emp);
 
 
-                result.Message = "your product has been deleted successfully..";
+                result.Message = "your employee has been deleted successfully..";
                 result.Status = true;
 
             }
